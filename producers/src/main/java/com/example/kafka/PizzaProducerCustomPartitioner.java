@@ -14,9 +14,9 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
-public class PizzaProducer {
+public class PizzaProducerCustomPartitioner {
 
-    public static final Logger log = LoggerFactory.getLogger(PizzaProducer.class.getName());
+    public static final Logger log = LoggerFactory.getLogger(PizzaProducerCustomPartitioner.class.getName());
 
     public static void sendPizzaMessage(KafkaProducer<String, String> kafkaProducer,
                                         String topicName, int iterCount,
@@ -92,7 +92,8 @@ public class PizzaProducer {
 
 
     public static void main(String[] args) {
-        String topicName = "pizza-topic";
+        String topicName = "pizza-topic-partitioner";
+
         //KafkaProducer configuration setting
         //null, "hello world"
 
@@ -103,22 +104,17 @@ public class PizzaProducer {
         props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.56.101:9092");
         props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-//        props.setProperty(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, "50000");
-//        props.setProperty(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, "6");
-        props.setProperty(ProducerConfig.ACKS_CONFIG, "all");
-        props.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
-
-        //acks setting
-//        props.setProperty(ProducerConfig.ACKS_CONFIG, "all");
-        //batch setting
-//        props.setProperty(ProducerConfig.BATCH_SIZE_CONFIG, "32000");
-//        props.setProperty(ProducerConfig.LINGER_MS_CONFIG, "20");
+//        props.setProperty("partitioner.class", "CustomPartitioner");
+        props.setProperty(ProducerConfig.PARTITIONER_CLASS_CONFIG, "com.example.kafka.CustomPartitioner");
+        // id 값에 따라 커스텀한 파티셔널에서 특정 파티션으로 보내기 위한 코드
+        // 상속받은 configure에 인자로 들어오기 때문에 하드코딩하지 않고 인자를 보낼 수 있다.
+        props.setProperty("custom.specialKey", "P001");
 
 
         //KafkaProducer Object Create
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(props);
 
-        sendPizzaMessage(kafkaProducer, topicName, -1, 100, 1000, 100, false);
+        sendPizzaMessage(kafkaProducer, topicName, -1, 100, 0, 0, true);
 
         kafkaProducer.close();
     }
