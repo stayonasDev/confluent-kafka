@@ -19,13 +19,17 @@ public class ConsumerWakeup {
 
     public static void main(String[] args) {
 
-        String topicName = "simple-topic";
+        String topicName = "pizza-topic";
 
         Properties props = new Properties();
         props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.56.101:9092");
         props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "group_01");
+//        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "group_01");
+        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "group-01-static");
+        //여러 인스턴스를 실행할 때 반드시 static id는 달라야 함
+        props.setProperty(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "3");
+
         //Default 마지막 offset
 //        props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         //처음부터 읽지만 이미 __consumer_offsets에 있는 메시지면 처음부터 불가X
@@ -57,8 +61,8 @@ public class ConsumerWakeup {
             while (true) {
                 ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
                 for (ConsumerRecord record : consumerRecords) {
-                    log.info("record key:{}, record value:{}, partition:{}, record offset:{}",
-                            record.key(), record.value(), record.partition(), record.offset());
+                    log.info("record key:{}, partition:{}, record offset:{}, record value:{}",
+                            record.key(), record.partition(), record.offset(), record.value());
 
                 }
             }
