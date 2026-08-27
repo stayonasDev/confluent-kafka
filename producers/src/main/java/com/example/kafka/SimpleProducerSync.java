@@ -40,7 +40,7 @@ public class SimpleProducerSync {
             RecordMetadata recordMetadata = kafkaProducer.send(producerRecord).get();
             log.info("\n ####### record metadata recieved #######\n" +
                     "partitions:" + recordMetadata.partition() + "\n" +
-                    "offse:" + recordMetadata.offset() + "\n" +
+                    "offset:" + recordMetadata.offset() + "\n" +
                     "timestamp:" + recordMetadata.timestamp());
         }catch(InterruptedException e) {
             e.printStackTrace();
