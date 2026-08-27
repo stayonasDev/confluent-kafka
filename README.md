@@ -137,9 +137,10 @@ $ cd $CONFLUENT_HOME/etc/kafka
 <br><br>
 ## Kafka CLI 명령어
 ```bash
-# Topic 생성
+# Topic
 #기본 파티션 1개 []는 부가 기능
-$ kafka-topics --bootstrap-server localhost:9092 --create --topic topic_name [--partitions 3] [--replication-factor 2]
+$ kafka-topics --bootstrap-server localhost:9092 [--create] [--delete] [--describe] --topic topic_name [--partitions 3] [--replication-factor 2]
+
 
 
 # Porducer
