@@ -8,6 +8,7 @@
 
 **Cleint**
 - JDK 17
+- Multi Module
 <br><br>
 
 
@@ -160,4 +161,58 @@ kafka-dump-log --deep-iteration --files /home/[사용자명]/data/kafka-logs/[to
 
 #Config/Partition/offset 별 설정 논외
 ```
+<br><br>
+## 카프카 멀티 브로커
+- 멀티 노드 카프카 클러스터가 아닌 멀티 브로커를 구축한다.
+- 그 이유는 하나의 VM이라 멀티 노드가 아닌 하나의 VM으로 멀티 브로커를 사용
+```
+$ cd data
+$ mkdir kafka-logs-01
+$ mkdir kafka-logs-02
+$ mkdir kafka-logs-03
+$ mkdir zookeeper_m
+
+$ cd $CONFLUENT_HOME/bin/kafka
+
+$ cp server.properties server_01.properties
+$ cp server.properties server_02.properties
+$ cp server.properties server_03.properties
+
+
+# vi로 버전들 수정
+# brocker.id=1 <버전 별 숫자로>
+# 주석 해제
+# listeners=PLAINTEXT://:9092
+<버전 별로 끝 번호 수정 9092 -> 9093...>
+
+# 수정
+logs.dirs=/home/[사용자명]/data/kafka-logs-01 <버전 별 숫자로>
+
+
+$ cd
+$ cp kafka_start.sh kafka_start_01.sh
+$ cp kafka_start.sh kafka_start_02.sh
+$ cp kafka_start.sh kafka_start_03.sh
+
+# vi로 각 파일
+$CONFLUENT_HOME/bin/kafka-server-start $CONFLUENT_HOME/etc/kafka/server_<버전에 맞게 번호로>.properties
+
+
+$ cd $CONFLUENT_HOME/etc/kafka
+$ cp zookeeper.properties zookeeper_m.properties
+
+# 동일한 Topic Name 때문에 충돌이 일어날 수도 있으니 수정
+$ vi zookeeper_m.properties
+# dataDir=/home/yoon/data/zookeeper_m  
+
+$ cd
+$ cp zoo_start.sh zoo_start_m.sh
+
+# 경로 수정
+$ vi zoo_start_m.sh
+# $CONFLUENT_HOME/bin/zookeeper-server-start $CONFLUENT_HOME/etc/kafka/zookeeper_m.properties
+
+
+```
+
 
