@@ -173,7 +173,7 @@ $ mkdir kafka-logs-02
 $ mkdir kafka-logs-03
 $ mkdir zookeeper_m
 
-$ cd $CONFLUENT_HOME/bin/kafka
+$ cd $CONFLUENT_HOME/etc/kafka
 
 $ cp server.properties server_01.properties
 $ cp server.properties server_02.properties
