@@ -263,3 +263,69 @@ $ confluent local services start
 #종료
 $ confluent local services stop
 ```
+<br><br>
+## 로그 관련
+```bash
+# 토픽별로 segment 설정
+# 설정 정보의 segment.byte 조회
+$ kafka-configs --bootstrap-server localhost:9092 --entity-type brokers --entity-name 0 --all --describe | grep log.segment.bytes
+
+# 기본 10G에서 약 10k로 변경
+$ kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entitiy-name <토픽명> --alter --add-config segment.bytes=10240
+
+# segemnt의 크기를 10k로 변경해서 Producer로 메시지를 계속 보내면 기존 파일 close 후 새로운 segement 생성됨
+# 설정 Default 원복
+$ kafka-configs --bootstrap-server localhost:9092 --entity-type topics ---entity-name <토픽명> --alter --delete-config segment.bytes
+
+# 60초로 설정 -> segment 60초가 지나면 자동으로 close 후 생성
+$ kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name <토픽명> --alter --add-config segment.ms=60000
+
+# log file 내부 보기
+$ kafka-dump-log --deep-iteration --files <로그 파일 경로> --print-data-log
+```
+
+## segment 생명주기 관리
+```bash
+# 기본 설정이 log.cleanup.policy=delete 
+$ kafka-configs --bootstrap-server localhost:9092 --entity-type brokers --entity-name 0 --all --describe | grep policy
+
+# 기본 168시간 후 삭제
+$ kafka-configs --bootstrap-server localhost:9092 --entity-type brokers --entity-name 0 --all --describe | grep retention
+
+# Topic Level
+$ kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name <토픽명> --all --describe | grep retention
+
+# Segment를 만들기 위해 시간 줄이기
+$ kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name <토픽명> --alter --add-config segment.bytes=10240
+
+# 3분 지나면 삭제, .delete로 되지만 모니터링 시간 5분에 더해서 최대 8분이 소요될 수 있다.
+$ kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name <토픽명> --alter --add-config retention.ms=180000 
+#초기화는 --delete-config
+```
+
+## Log Compaction
+```bash
+# log compaction 관련 설정 보기
+$ kafka-configs --bootstrap-server localhost:9092 --entity-type brokers --entity-name 0 --all --describe | grep policy
+$ kafka-configs --bootstrap-server localhost:9092 --entity-type brokers --entity-name 0 --all --describe | grep cleaner
+
+# Topic Level
+$ kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name <토픽명> --all --describe | grep policy
+$ kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name <토픽명> --all --describe | grep cleaner 
+
+# Compact 설정 후 Producer를 통해 로그를 확인할 수 있다.
+$ kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name <토픽명> --alter --add-config cleanup.policy=compact
+$ kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name <토픽명>--alter --add-config min.cleanable.dirty.ratio=0.1
+
+$ while true
+  do
+    sleep 5
+    echo "====== `date` ======"
+    ls -lia
+  done
+# Producer 실행 후 로그 보기
+```
+<br><br>
+
+## 모니터링 화면
+
