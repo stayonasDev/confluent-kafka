@@ -29,6 +29,8 @@
 https://ttyplus.com/download/mtputty_setup.exe
 # 주의 설치 전 확인
 ```
+- 
+
 <br><br>
 
 ## 터미널 가이드
@@ -215,5 +217,49 @@ $ vi zoo_start_m.sh
 
 
 ```
+<br><br>
+## Zookeper 관련 명령어
+```bash
+$ zookeeper-shell localhost:2181
+
+# Z Node Root Directory
+$ ls /
+
+# contoller 조회
+# Node가 죽으면 contoller는 Z Node에서 사라짐
+$ get /contoller
+
+# 등록된 Broker 정보 조회
+$ ls /brokers/ids
+$ get /brokers/ids/[조회된 id]
+
+```
 
 
+## 모니터링 단계
+- Comunity 버전은 무료 모니터링 툴이 없어 Local 버전을 다운 받거나 Apache Kafka 오픈소스를 사용해서 다른 사람들이 만들어 놓은 툴을 사용해야 함
+- Confluent Kafka를 설치해서 모니터링 실습을 진행할 것이다.
+- Local은 모니터링을 수행하기 위함이다. Local에서는 멀티 브로커가 수행되지 않는다.
+
+```bash
+$ wget https://packages.confluent.io/archive/7.2/confluent-7.2.1.tar.gz
+
+$ tar -xvf confluent-7.2.1.tar.gz
+# mv 명령을 수행하면 폴더가 새로 생성될 뿐 바뀌지 않는 문제점이 있다. 이름은 그대로 가져간다.
+
+# 수정
+# export CONFLUENT_HOME=/home/[사용자명]/confluent-7.2.1
+$ vi .bashrc
+$ . .bashrc
+$ echo $CONFLUENT_HOME 
+
+# 기존 방식으로 실행하면 컨트롤센터가 되지 않아 모니터링 작업에 문제가 있다.
+$ cd confluent-7.2.1/bin
+
+# 해당 명령어는 시작이 잘 안되는 경우가 빈번하다.
+# 실패 시 다시 명령어를 입력하거나 /tmp 밑에 rm -rf confluent* 후 VM 재시작
+$ confluent local services start
+
+#종료
+$ confluent local services stop
+```
