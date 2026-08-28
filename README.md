@@ -328,4 +328,6 @@ $ while true
 <br><br>
 
 ## 모니터링 화면
+<img width="1917" height="1017" alt="모니터링화면-1" src="https://github.com/user-attachments/assets/6667f937-69e0-4135-9d68-7a22d566f061" />
 
+<img width="1897" height="867" alt="모니터링화면-2" src="https://github.com/user-attachments/assets/4bc86db5-cc1b-4577-88d8-3e699cfd9526" />
